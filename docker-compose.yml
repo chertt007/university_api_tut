@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: university_api_user
+      POSTGRES_PASSWORD: university_api_password
+      POSTGRES_DB: university_api_db
+    
+
+volumes:
+  postgres_data:
