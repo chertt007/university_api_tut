@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 
 from app.db import get_db_connection
-from app.models.student import Student, StudentCreate
+from app.models.student import StudentCreate
 
 
 
@@ -20,7 +20,10 @@ async def status():
 def create_student(student: StudentCreate):
     conn, cursor = get_db_connection()
     try:
-        cursor.execute("INSERT INTO students (first_name, last_name) VALUES (%s, %s)", (student.first_name, student.last_name))
+        cursor.execute(
+            "INSERT INTO students (first_name, last_name) VALUES (%s, %s) RETURNING id",
+            (student.first_name, student.last_name),
+        )
         new_student = cursor.fetchone()
         conn.commit()
         cursor.close()
@@ -31,6 +34,6 @@ def create_student(student: StudentCreate):
     conn.close()
     
     if new_student:
-        return Student(**new_student)
+        return {"id": new_student["id"]}
     
     raise HTTPException(status_code=400, detail="Error creating student")
